@@ -16,11 +16,13 @@ public class MainActivity extends AppCompatActivity implements AlarmAdapter.Item
     private RecyclerView mAlarmRecyclerView;
     private TextView mAlarmListStatusTextView;
     private AlarmAdapter mAlarmAdapter;
+    private Intent mIntent;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
         bindViews();
         initToolBar();
         initAlarmRecyclerView();
@@ -39,11 +41,19 @@ public class MainActivity extends AppCompatActivity implements AlarmAdapter.Item
 
     private void initAlarmRecyclerView(){
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
-        mAlarmRecyclerView.setLayoutManager(layoutManager); //RecyclerView에 LinearLayoutManager 설정.
+        mAlarmRecyclerView.setLayoutManager(layoutManager);
 
-        //어댑터 등록.
         mAlarmAdapter = new AlarmAdapter(getApplicationContext(), this);
         mAlarmRecyclerView.setAdapter(mAlarmAdapter);
+    }
+
+    private void launchDetailActivity(){
+        mIntent = new Intent(this, DetailActivity.class);
+        startActivity(mIntent);
+    }
+
+    private void onClickAddMenuItem(){
+        launchDetailActivity();
     }
 
     @Override
@@ -56,8 +66,7 @@ public class MainActivity extends AppCompatActivity implements AlarmAdapter.Item
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()){
             case R.id.action_add:
-                Intent intent = new Intent(this, DetailActivity.class);
-                startActivity(intent);
+                onClickAddMenuItem();
                 return true;
         }
         return super.onOptionsItemSelected(item);

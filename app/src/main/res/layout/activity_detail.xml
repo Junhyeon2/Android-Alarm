@@ -79,7 +79,7 @@
                     android:layout_marginTop="10dp"
                     android:background="@drawable/round_border"
                     android:orientation="horizontal"
-                    android:divider="?android:dividerHorizontal"
+                    android:divider="@drawable/divider"
                     android:dividerPadding="15dp"
                     android:showDividers="middle">
 
@@ -92,7 +92,7 @@
                         android:textOn="@string/sunday_label"
                         android:textOff="@string/sunday_label"
                         android:textColor="@color/colorGrey400"
-                        android:onClick="onClickToggleButton"/>
+                        android:onClick="onClickButton"/>
 
                     <ToggleButton
                         android:id="@+id/bt_mon"
@@ -103,7 +103,7 @@
                         android:textOn="@string/monday_label"
                         android:textOff="@string/monday_label"
                         android:textColor="@color/colorGrey400"
-                        android:onClick="onClickToggleButton"/>
+                        android:onClick="onClickButton"/>
 
                     <ToggleButton
                         android:id="@+id/bt_tue"
@@ -114,7 +114,7 @@
                         android:textOn="@string/tuesday_label"
                         android:textOff="@string/tuesday_label"
                         android:textColor="@color/colorGrey400"
-                        android:onClick="onClickToggleButton"/>
+                        android:onClick="onClickButton"/>
 
                     <ToggleButton
                         android:id="@+id/bt_wed"
@@ -125,7 +125,7 @@
                         android:textOn="@string/wednesday_label"
                         android:textOff="@string/wednesday_label"
                         android:textColor="@color/colorGrey400"
-                        android:onClick="onClickToggleButton"/>
+                        android:onClick="onClickButton"/>
                     <ToggleButton
                         android:id="@+id/bt_thu"
                         android:layout_width="0dp"
@@ -135,7 +135,7 @@
                         android:textOn="@string/thursday_label"
                         android:textOff="@string/thursday_label"
                         android:textColor="@color/colorGrey400"
-                        android:onClick="onClickToggleButton"/>
+                        android:onClick="onClickButton"/>
                     <ToggleButton
                         android:id="@+id/bt_fri"
                         android:layout_width="0dp"
@@ -145,7 +145,7 @@
                         android:textOn="@string/friday_label"
                         android:textOff="@string/friday_label"
                         android:textColor="@color/colorGrey400"
-                        android:onClick="onClickToggleButton"/>
+                        android:onClick="onClickButton"/>
                     <ToggleButton
                         android:id="@+id/bt_sat"
                         android:layout_width="0dp"
@@ -155,7 +155,7 @@
                         android:textOn="@string/saturday_label"
                         android:textOff="@string/saturday_label"
                         android:textColor="@color/colorGrey400"
-                        android:onClick="onClickToggleButton"/>
+                        android:onClick="onClickButton"/>
 
                 </LinearLayout>
             </LinearLayout>
@@ -219,12 +219,26 @@
                     app:dsb_progressColor="@color/colorTeal"/>
             </LinearLayout>
 
-            <RelativeLayout
+            <android.support.v7.widget.SwitchCompat
+                android:id="@+id/sw_vibrate"
                 android:layout_width="match_parent"
                 android:layout_height="40dp"
                 android:layout_marginTop="10dp"
                 android:layout_marginBottom="10dp"
-                android:gravity="center_vertical">
+                android:text="@string/vibrate_label"
+                android:textSize="15sp"
+                android:textColor="@color/colorTeal"
+                android:theme="@style/CustomSwitch"
+                android:checked="true"/>
+
+            <RelativeLayout
+                android:id="@+id/layout_repeat"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="10dp"
+                android:gravity="center_vertical"
+                android:onClick="onClickLayout">
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -236,12 +250,13 @@
                     android:textColor="@color/colorTeal"/>
 
                 <TextView
+                    android:id="@+id/tv_repeat_interval_number"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentEnd="true"
                     android:layout_alignParentRight="true"
                     android:layout_gravity="right"
-                    android:text="content" />
+                    android:text="@string/no_use_label" />
             </RelativeLayout>
 
             <LinearLayout
@@ -305,6 +320,15 @@
                         android:id="@+id/iv_transparent"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"/>
+                    <ImageButton
+                        android:id="@+id/ib_location"
+                        android:src="@drawable/ic_my_location_white_24dp"
+                        android:layout_width="30dp"
+                        android:layout_height="30dp"
+                        android:background="@android:color/transparent"
+                        android:layout_gravity="end"
+                        android:onClick="onClickButton"
+                        android:contentDescription="@string/current_location_label"/>
                 </FrameLayout>
             </LinearLayout>
         </LinearLayout>

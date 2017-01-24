@@ -1,6 +1,7 @@
 package junhyeon.com.alarm;
 
 import android.content.Intent;
+import android.content.res.ColorStateList;
 import android.database.Cursor;
 import android.media.Ringtone;
 import android.media.RingtoneManager;
@@ -11,6 +12,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.AppCompatRadioButton;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
+import android.view.ViewGroup;
 import android.widget.RadioGroup;
 
 import java.util.ArrayList;
@@ -59,23 +61,18 @@ public class RingtoneActivity extends AppCompatActivity implements RadioGroup.On
 
         mRingtoneList = new ArrayList<>();
 
-        RadioGroup.LayoutParams params = new RadioGroup.LayoutParams(this, null);
-        params.setMargins(10, 10, 10, 10);
-
         int selectedRingtoneId = -1;
+
+        RadioGroup.LayoutParams params = new RadioGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        float scale = getResources().getDisplayMetrics().density;
+        ColorStateList colorStateList = ContextCompat.getColorStateList(this, R.color.radio_button_selector);
 
         while (cursor.moveToNext()) {
             String title = cursor.getString(RingtoneManager.TITLE_COLUMN_INDEX);
             String index = cursor.getString(RingtoneManager.ID_COLUMN_INDEX);
             String uri = cursor.getString(RingtoneManager.URI_COLUMN_INDEX)+"/"+index;
 
-            AppCompatRadioButton radioButton = new AppCompatRadioButton(this);
-            radioButton.setText(title);
-            radioButton.setTextColor(ContextCompat.getColorStateList(this, R.color.radio_button_selector));
-            radioButton.setSupportButtonTintList(ContextCompat.getColorStateList(this, R.color.radio_button_selector));
-            radioButton.setPadding(10, 50, 10, 50);
-            radioButton.setLayoutParams(params);
-            radioButton.setId(mRingtoneList.size());
+            AppCompatRadioButton radioButton = ViewUtils.getRadioButton(this, params, scale, title, colorStateList, mRingtoneList.size());
             if(title.equals(ringtoneTitle))
                 selectedRingtoneId = radioButton.getId();
             mRadioGroup.addView(radioButton);

@@ -24,9 +24,20 @@
     <string name="location_label">위치</string>
     <string name="notify_sound_label">알림음</string>
     <string name="repeat_notify_label">다시 알림</string>
+    <string name="repeat_notify_select_label">다시 알림 선택</string>
     <string name="alarm_list_empty_message">등록된 알람이 없습니다. 알람을 등록해주세요!</string>
     <string name="ringtone_select_label">알림음 선택</string>
     <string name="minute_label">분</string>
     <string name="number_label">회</string>
-
+    <string name="no_repeat_label">반복 없음</string>
+    <string name="repeat_interval_label">반복 시간</string>
+    <string name="repeat_number_label">반복 횟수</string>
+    <string name="use_label">사용</string>
+    <string name="no_use_label">사용 안함</string>
+    <string name="location_permission_deny_message">위치 정보를 제공하는 권한 허가를 하지 않으면 사용하실 수 없습니다.</string>
+    <string name="current_location_label">현재 위치 확인</string>
+    <string name="passive_gps_message">GSP가 활성화 되지 않아 현재 위치정보를 가져올 수 없습니다.</string>
+    <string name="gps_active_alert_message">현재 위치 정보를 확인하기위해 GPS를 활성화 합니다. 계속하시겠습니까?</string>
+    <string name="active_label">활성화</string>
+    <string name="cancel_label">취소</string>
 </resources>
