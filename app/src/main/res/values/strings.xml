@@ -1,3 +1,32 @@
 <resources>
     <string name="app_name">Alarm</string>
+    <string name="alarm_list_label">알람 목록</string>
+    <string name="alarm_add_label">알람 추가</string>
+    <string name="alarm_modify_label">알람 수정</string>
+    <string name="alarm_register_label">알람 등록</string>
+    <string name="alarm_unregister_label">알람 등록 취소</string>
+    <string name="alarm_delete_label">알람 삭제</string>
+    <string name="alarm_time_label">알람 시간</string>
+    <string name="repeat_day_label">반복 요일</string>
+    <string name="memo_label">메모</string>
+    <string name="memo_hint">메모를 입력해주세요!</string>
+    <string name="am_label">오전</string>
+    <string name="pm_label">오후</string>
+    <string name="sunday_label">일</string>
+    <string name="monday_label">월</string>
+    <string name="tuesday_label">화</string>
+    <string name="wednesday_label">수</string>
+    <string name="thursday_label">목</string>
+    <string name="friday_label">금</string>
+    <string name="saturday_label">토</string>
+    <string name="sound_label">소리</string>
+    <string name="vibrate_label">진동</string>
+    <string name="location_label">위치</string>
+    <string name="notify_sound_label">알림음</string>
+    <string name="repeat_notify_label">다시 알림</string>
+    <string name="alarm_list_empty_message">등록된 알람이 없습니다. 알람을 등록해주세요!</string>
+    <string name="ringtone_select_label">알림음 선택</string>
+    <string name="minute_label">분</string>
+    <string name="number_label">회</string>
+
 </resources>
