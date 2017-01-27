@@ -6,6 +6,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
@@ -54,6 +55,12 @@ public class MainActivity extends AppCompatActivity implements AlarmAdapter.Item
     private void launchDetailActivity(){
         mIntent = new Intent(this, DetailActivity.class);
         startActivity(mIntent);
+    }
+
+    @Override
+    protected void onResume() {
+        mAlarmAdapter.notifyDataSetChanged();
+        super.onResume();
     }
 
     @Override

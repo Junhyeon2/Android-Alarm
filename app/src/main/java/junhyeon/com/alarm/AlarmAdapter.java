@@ -106,8 +106,20 @@ public class AlarmAdapter extends RealmRecyclerViewAdapter<Alarm, AlarmAdapter.A
 
             if(alarm.getHour() < 12){
                 mAmPmTextView.setText(mContext.getString(R.string.am_label));
-                String time = String.valueOf(alarm.getHour())+":"+String.valueOf(alarm.getMinute());
-                mTimeTextView.setText(time);
+                StringBuffer time = new StringBuffer();
+                if(alarm.getHour() < 10){
+                    time.append("0"+String.valueOf(alarm.getHour()));
+                }else{
+                    time.append(String.valueOf(alarm.getHour()));
+                }
+                time.append(":");
+                if(alarm.getMinute() < 10){
+                    time.append("0"+String.valueOf(alarm.getMinute()));
+                }else{
+                    time.append(String.valueOf(alarm.getMinute()));
+                }
+
+                mTimeTextView.setText(time.toString());
             }else{
                 mAmPmTextView.setText(mContext.getString(R.string.pm_label));
                 String time = String.valueOf(alarm.getHour()-12)+":"+String.valueOf(alarm.getMinute());

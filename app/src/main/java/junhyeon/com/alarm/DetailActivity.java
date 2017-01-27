@@ -62,7 +62,6 @@ public class DetailActivity extends AppCompatActivity implements View.OnTouchLis
     private static final int PICK_ALARM_RINGTONE_REQUEST = 1;
     private static final int PICK_ALARM_REPEAT_REQUEST = 2;
     private static final int DEFAULT_ALARM_ID = -1;
-    private static final int DEFAULT_ALARM_POSITION = -1;
     static final LatLng LAT_LNG_SEOUL = new LatLng(37.565650, 126.978017);
     private boolean mIsGrantedMapPermission;
     private boolean mIsActiveGsp;
@@ -89,7 +88,6 @@ public class DetailActivity extends AppCompatActivity implements View.OnTouchLis
     private RealmAsyncTask mRealmAsyncTask;
     private MenuItem mAddMenuItem;
     private int mId;
-    private int mPosition;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -149,7 +147,6 @@ public class DetailActivity extends AppCompatActivity implements View.OnTouchLis
     private boolean isModifyAlarm() {
         Intent intent = getIntent();
         if (intent != null) {
-            mPosition = intent.getIntExtra("position", DEFAULT_ALARM_POSITION);
             mId = intent.getIntExtra("id", DEFAULT_ALARM_ID);
         } else
             mId = DEFAULT_ALARM_ID;
@@ -191,7 +188,7 @@ public class DetailActivity extends AppCompatActivity implements View.OnTouchLis
             builder.show();
         } else {
             mIsActiveGsp = true;
-            mGoogleApiClient.connect();
+            mSupportMapFragment.getMapAsync(DetailActivity.this);
         }
 
     }
@@ -370,6 +367,7 @@ public class DetailActivity extends AppCompatActivity implements View.OnTouchLis
                 }
                 // 2. - 3) 알람음 - > 눌렀을 때 액티비티 수정.
                 String ringtoneUri = alarm.getRingtoneUri();
+                Log.d("DetailActivity", "Ringtone URI: "+ringtoneUri);
                 Ringtone ringtone = RingtoneManager.getRingtone(getApplicationContext(), Uri.parse(ringtoneUri));
                 mRingtoneTitleTextView.setText(ringtone.getTitle(DetailActivity.this));
                 mRingtoneUriTextView.setText(ringtoneUri);
@@ -389,7 +387,7 @@ public class DetailActivity extends AppCompatActivity implements View.OnTouchLis
                 mRepeatNumber = alarm.getRepeatNumber();
                 String repeatIntervalNumberText;
                 if(mRepeatNumber == 0 && mRepeatInterval == 0){
-                    repeatIntervalNumberText = getString(R.string.no_repeat_label);
+                    repeatIntervalNumberText = getString(R.string.no_use_label);
                 }else {
                     repeatIntervalNumberText = mRepeatInterval + getString(R.string.repeat_interval_label)
                             + ", " + mRepeatNumber + getString(R.string.repeat_number_label);
