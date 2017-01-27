@@ -5,14 +5,13 @@ import android.content.res.ColorStateList;
 import android.support.v7.widget.AppCompatRadioButton;
 import android.widget.RadioGroup;
 
-public class ViewUtils {
+class ViewUtils {
     private static final int PADDING_LEFT = 10;
     private static final int PADDING_TOP = 20;
     private static final int PADDING_RIGHT = 10;
     private static final int PADDING_BOTTOM = 20;
 
-    //context, title, colorStateList, checkedItemTitle, id
-    public static AppCompatRadioButton getRadioButton(Context context, RadioGroup.LayoutParams layoutParams, float scale,
+    static AppCompatRadioButton getRadioButton(Context context, RadioGroup.LayoutParams layoutParams, float scale,
                                                       String text, ColorStateList colorStateList, int id){
         AppCompatRadioButton radioButton = new AppCompatRadioButton(context);
         radioButton.setText(text);

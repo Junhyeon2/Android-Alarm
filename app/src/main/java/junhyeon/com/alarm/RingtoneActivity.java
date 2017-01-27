@@ -101,10 +101,7 @@ public class RingtoneActivity extends AppCompatActivity implements RadioGroup.On
         bundle.putString("title", mRingtoneList.get(mRadioGroup.getCheckedRadioButtonId())[INDEX_RINGTONE_TITLE]);
         bundle.putString("uri", mRingtoneList.get(mRadioGroup.getCheckedRadioButtonId())[INDEX_RINGTONE_URI]);
 
-        Intent resultIntent = new Intent();
-        resultIntent.putExtras(bundle);
 
-        setResult(RESULT_OK, resultIntent);
         super.onBackPressed();
     }
 

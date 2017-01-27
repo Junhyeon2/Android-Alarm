@@ -9,7 +9,9 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
-import android.widget.Toast;
+
+import io.realm.Realm;
+import junhyeon.com.alarm.model.Alarm;
 
 public class MainActivity extends AppCompatActivity implements AlarmAdapter.ItemClickListener{
     private Toolbar mToolbar;
@@ -17,6 +19,7 @@ public class MainActivity extends AppCompatActivity implements AlarmAdapter.Item
     private TextView mAlarmListStatusTextView;
     private AlarmAdapter mAlarmAdapter;
     private Intent mIntent;
+    private Realm mRealm = MyApplication.getRealmInstance();;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,14 +45,21 @@ public class MainActivity extends AppCompatActivity implements AlarmAdapter.Item
     private void initAlarmRecyclerView(){
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         mAlarmRecyclerView.setLayoutManager(layoutManager);
-
-        mAlarmAdapter = new AlarmAdapter(getApplicationContext(), this);
+        mAlarmRecyclerView.setHasFixedSize(true);
+        mAlarmAdapter = new AlarmAdapter(getApplicationContext(), mRealm.where(Alarm.class).findAllAsync(), true, this);
         mAlarmRecyclerView.setAdapter(mAlarmAdapter);
+
     }
 
     private void launchDetailActivity(){
         mIntent = new Intent(this, DetailActivity.class);
         startActivity(mIntent);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        mRealm.close();
     }
 
     private void onClickAddMenuItem(){
@@ -73,7 +83,9 @@ public class MainActivity extends AppCompatActivity implements AlarmAdapter.Item
     }
 
     @Override
-    public void onItemClick(int position) {
-        Toast.makeText(this, "position: "+position, Toast.LENGTH_SHORT).show();
+    public void onItemClick(int position, int id) {
+        mIntent = new Intent(this, DetailActivity.class);
+        mIntent.putExtra("id", id);
+        startActivity(mIntent);
     }
 }

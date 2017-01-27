@@ -91,8 +91,7 @@
                         android:background="@android:color/transparent"
                         android:textOn="@string/sunday_label"
                         android:textOff="@string/sunday_label"
-                        android:textColor="@color/colorGrey400"
-                        android:onClick="onClickButton"/>
+                        android:textColor="@color/radio_button_selector"/>
 
                     <ToggleButton
                         android:id="@+id/bt_mon"
@@ -102,8 +101,7 @@
                         android:background="@android:color/transparent"
                         android:textOn="@string/monday_label"
                         android:textOff="@string/monday_label"
-                        android:textColor="@color/colorGrey400"
-                        android:onClick="onClickButton"/>
+                        android:textColor="@color/radio_button_selector"/>
 
                     <ToggleButton
                         android:id="@+id/bt_tue"
@@ -113,8 +111,7 @@
                         android:background="@android:color/transparent"
                         android:textOn="@string/tuesday_label"
                         android:textOff="@string/tuesday_label"
-                        android:textColor="@color/colorGrey400"
-                        android:onClick="onClickButton"/>
+                        android:textColor="@color/radio_button_selector"/>
 
                     <ToggleButton
                         android:id="@+id/bt_wed"
@@ -124,8 +121,7 @@
                         android:background="@android:color/transparent"
                         android:textOn="@string/wednesday_label"
                         android:textOff="@string/wednesday_label"
-                        android:textColor="@color/colorGrey400"
-                        android:onClick="onClickButton"/>
+                        android:textColor="@color/radio_button_selector"/>
                     <ToggleButton
                         android:id="@+id/bt_thu"
                         android:layout_width="0dp"
@@ -134,8 +130,7 @@
                         android:background="@android:color/transparent"
                         android:textOn="@string/thursday_label"
                         android:textOff="@string/thursday_label"
-                        android:textColor="@color/colorGrey400"
-                        android:onClick="onClickButton"/>
+                        android:textColor="@color/radio_button_selector"/>
                     <ToggleButton
                         android:id="@+id/bt_fri"
                         android:layout_width="0dp"
@@ -144,8 +139,7 @@
                         android:background="@android:color/transparent"
                         android:textOn="@string/friday_label"
                         android:textOff="@string/friday_label"
-                        android:textColor="@color/colorGrey400"
-                        android:onClick="onClickButton"/>
+                        android:textColor="@color/radio_button_selector"/>
                     <ToggleButton
                         android:id="@+id/bt_sat"
                         android:layout_width="0dp"
@@ -154,8 +148,7 @@
                         android:background="@android:color/transparent"
                         android:textOn="@string/saturday_label"
                         android:textOff="@string/saturday_label"
-                        android:textColor="@color/colorGrey400"
-                        android:onClick="onClickButton"/>
+                        android:textColor="@color/radio_button_selector"/>
 
                 </LinearLayout>
             </LinearLayout>
@@ -205,7 +198,7 @@
                 android:gravity="center_vertical">
 
                 <ImageView
-                    android:src="@drawable/ic_volume_up_black_24dp"
+                    android:src="@drawable/ic_volume_up_24dp"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content" />
 
@@ -322,7 +315,7 @@
                         android:layout_height="match_parent"/>
                     <ImageButton
                         android:id="@+id/ib_location"
-                        android:src="@drawable/ic_my_location_white_24dp"
+                        android:src="@drawable/ic_my_location_24dp"
                         android:layout_width="30dp"
                         android:layout_height="30dp"
                         android:background="@android:color/transparent"
