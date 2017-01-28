@@ -8,7 +8,6 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.TextView;
 
 import io.realm.Realm;
@@ -55,19 +54,6 @@ public class MainActivity extends AppCompatActivity implements AlarmAdapter.Item
     private void launchDetailActivity(){
         mIntent = new Intent(this, DetailActivity.class);
         startActivity(mIntent);
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        int itemCount = mAlarmAdapter.getItemCount();
-        if(itemCount > 0){
-            mAlarmRecyclerView.setVisibility(View.VISIBLE);
-            mAlarmListStatusTextView.setVisibility(View.GONE);
-        }else{
-            mAlarmRecyclerView.setVisibility(View.GONE);
-            mAlarmListStatusTextView.setVisibility(View.VISIBLE);
-        }
     }
 
     @Override
