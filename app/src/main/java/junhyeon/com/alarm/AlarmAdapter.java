@@ -13,6 +13,7 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 
 import io.realm.OrderedRealmCollection;
 import io.realm.Realm;
@@ -53,6 +54,9 @@ public class AlarmAdapter extends RealmRecyclerViewAdapter<Alarm, AlarmAdapter.A
 
     class AlarmViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
         int mId;
+        boolean mIsRepeatDay[];
+        int mHour;
+        int mMinute;
         CardView mCardView;
         ImageButton mAlarmDeleteImageButton;
         ImageButton mAlarmImageButton;
@@ -104,36 +108,51 @@ public class AlarmAdapter extends RealmRecyclerViewAdapter<Alarm, AlarmAdapter.A
                 mAlarmOnImageButton.setVisibility(View.GONE);
             }
 
+            mHour = alarm.getHour();
+            mMinute = alarm.getMinute();
+
             if(alarm.getHour() < 12){
                 mAmPmTextView.setText(mContext.getString(R.string.am_label));
-                StringBuffer time = new StringBuffer();
-                if(alarm.getHour() < 10){
-                    time.append("0"+String.valueOf(alarm.getHour()));
-                }else{
-                    time.append(String.valueOf(alarm.getHour()));
-                }
-                time.append(":");
-                if(alarm.getMinute() < 10){
-                    time.append("0"+String.valueOf(alarm.getMinute()));
-                }else{
-                    time.append(String.valueOf(alarm.getMinute()));
-                }
-
-                mTimeTextView.setText(time.toString());
             }else{
                 mAmPmTextView.setText(mContext.getString(R.string.pm_label));
-                String time = String.valueOf(alarm.getHour()-12)+":"+String.valueOf(alarm.getMinute());
-                mTimeTextView.setText(time);
+
             }
+
+            StringBuffer time = new StringBuffer();
+            if(alarm.getHour() < 10){
+                time.append("0"+String.valueOf(alarm.getHour()));
+            }else if(alarm.getHour() > 12 && alarm.getHour() < 22){
+                time.append("0"+String.valueOf(alarm.getHour()-12));
+            }else if (alarm.getHour() >= 22){
+                time.append(String.valueOf(alarm.getHour()-12));
+            }else {
+                time.append(String.valueOf(alarm.getHour()));
+            }
+            time.append(":");
+            if(alarm.getMinute() < 10){
+                time.append("0"+String.valueOf(alarm.getMinute()));
+            }else{
+                time.append(String.valueOf(alarm.getMinute()));
+            }
+            mTimeTextView.setText(time.toString());
+
+
             String repeatDay = alarm.getRepeatDay();
 
+            boolean isNotRepeat = true;
+            mIsRepeatDay = new boolean[7];
             for(int i=0; i<repeatDay.length(); ++i){
                 if(repeatDay.charAt(i) == '1'){
                     mDayTextViewList.get(i).setTextColor(ContextCompat.getColor(mContext, R.color.colorTeal));
+                    mIsRepeatDay[i] = true;
+                    isNotRepeat = false;
                 }else{
                     mDayTextViewList.get(i).setTextColor(ContextCompat.getColor(mContext, R.color.colorGrey700));
+                    mIsRepeatDay[i] = false;
                 }
             }
+            if(isNotRepeat)
+                mIsRepeatDay = null;
 
             if(alarm.getVibrate()){
                 mVibrateTextView.setTextColor(ContextCompat.getColor(mContext, R.color.colorTeal));
@@ -191,6 +210,7 @@ public class AlarmAdapter extends RealmRecyclerViewAdapter<Alarm, AlarmAdapter.A
                 @Override
                 public void onSuccess() {
                     notifyItemRemoved(position);
+                    AlarmUtils.unregisterAlarm(mContext, mId);
                 }
             }, new Realm.Transaction.OnError() {
                 @Override
@@ -213,6 +233,20 @@ public class AlarmAdapter extends RealmRecyclerViewAdapter<Alarm, AlarmAdapter.A
                 @Override
                 public void onSuccess() {
                     notifyDataSetChanged();
+                    if(isRegister){
+                        //알람 등록
+                        long now = System.currentTimeMillis();
+                        AlarmUtils.registerAlarm(
+                                mContext,
+                                mId,
+                                mIsRepeatDay,
+                                getCurrentDate(now),
+                                getTargetDate(now)
+                        );
+                    }else{
+                        //알람 등록 삭제
+                        AlarmUtils.unregisterAlarm(mContext, mId);
+                    }
                 }
             }, new Realm.Transaction.OnError() {
                 @Override
@@ -220,6 +254,23 @@ public class AlarmAdapter extends RealmRecyclerViewAdapter<Alarm, AlarmAdapter.A
                     //핸들러 처리
                 }
             });
+        }
+        private Calendar getCurrentDate(long now){
+            Calendar currentDate = Calendar.getInstance();
+            currentDate.setTimeInMillis(now);
+
+            return currentDate;
+        }
+
+        private Calendar getTargetDate(long now){
+            Calendar targetDate = Calendar.getInstance();
+            targetDate.setTimeInMillis(now);
+
+            targetDate.set(Calendar.HOUR_OF_DAY, mHour);
+            targetDate.set(Calendar.MINUTE, mMinute);
+            targetDate.set(Calendar.SECOND, 0);
+
+            return targetDate;
         }
     }
 }

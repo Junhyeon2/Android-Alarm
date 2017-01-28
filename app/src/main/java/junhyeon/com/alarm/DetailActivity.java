@@ -48,6 +48,7 @@ import org.adw.library.widgets.discreteseekbar.DiscreteSeekBar;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
 
@@ -88,6 +89,7 @@ public class DetailActivity extends AppCompatActivity implements View.OnTouchLis
     private RealmAsyncTask mRealmAsyncTask;
     private MenuItem mAddMenuItem;
     private int mId;
+    private boolean mIsModify;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -97,7 +99,7 @@ public class DetailActivity extends AppCompatActivity implements View.OnTouchLis
         bindViews();
 
         setEventListeners();
-        if (isModifyAlarm()) {
+        if (mIsModify = isModifyAlarm()) {
             selectOneAlarm();
         } else {
             setRingtoneValue();
@@ -150,7 +152,6 @@ public class DetailActivity extends AppCompatActivity implements View.OnTouchLis
             mId = intent.getIntExtra("id", DEFAULT_ALARM_ID);
         } else
             mId = DEFAULT_ALARM_ID;
-
         return (mId != DEFAULT_ALARM_ID);
     }
 
@@ -270,8 +271,11 @@ public class DetailActivity extends AppCompatActivity implements View.OnTouchLis
                 } else {
                     nextId = currentIdNum.intValue() + 1;
                 }
+
                 if (mId != DEFAULT_ALARM_ID)
                     nextId = mId;
+                else
+                    mId = nextId;
 
                 Alarm alarm = new Alarm();
                 alarm.setId(nextId);
@@ -322,12 +326,18 @@ public class DetailActivity extends AppCompatActivity implements View.OnTouchLis
             public void onSuccess() {
                 mRealm.close();
                 mAddMenuItem.setEnabled(true);
-//                Intent resultIntent = new Intent();
-//                resultIntent.putExtra("position", mPosition);
-//                setResult(RESULT_OK, resultIntent);
-                if (!DetailActivity.this.isFinishing()) {
-                    finish();
-                }
+                //알람매니저에 등록되어 있는 경우에 먼저 삭제
+                AlarmUtils.unregisterAlarm(DetailActivity.this, mId);
+                //등록
+                long now = System.currentTimeMillis();
+                AlarmUtils.registerAlarm(
+                        DetailActivity.this,
+                        mId,
+                        getRepeatDayArray(),
+                        getCurrentDate(now),
+                        getTargetDate(now)
+                );
+                finish();
             }
         }, new Realm.Transaction.OnError() {
             @Override
@@ -340,85 +350,69 @@ public class DetailActivity extends AppCompatActivity implements View.OnTouchLis
     }
 
     private void selectOneAlarm() {
+
         Realm realm = MyApplication.getRealmInstance();
 
-        realm.executeTransactionAsync(new Realm.Transaction() {
-            @Override
-            public void execute(Realm realm) {
-                // 1. ID 값으로 셀렉트문을 날려 알람 하나 정보를 가져온다.
-                Alarm alarm = realm.where(Alarm.class).equalTo("id", mId).findFirst();
-                // 2. 값을 셋팅한다.
-                // 2. - 1) 알람 시간
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                    mTimePicker.setHour(alarm.getHour());
-                    mTimePicker.setMinute(alarm.getMinute());
-                } else {
-                    mTimePicker.setCurrentHour(alarm.getHour());
-                    mTimePicker.setCurrentMinute(alarm.getMinute());
-                }
-                // 2. - 2) 반복 요일
-                String repeatDay = alarm.getRepeatDay();
-                for (int i = 0; i < repeatDay.length(); ++i) {
-                    if (repeatDay.charAt(i) == '1') {
-                        mDayToggleButtonList.get(i).setChecked(true);
-                    } else {
-                        mDayToggleButtonList.get(i).setChecked(false);
-                    }
-                }
-                // 2. - 3) 알람음 - > 눌렀을 때 액티비티 수정.
-                String ringtoneUri = alarm.getRingtoneUri();
-                Log.d("DetailActivity", "Ringtone URI: "+ringtoneUri);
-                Ringtone ringtone = RingtoneManager.getRingtone(getApplicationContext(), Uri.parse(ringtoneUri));
-                mRingtoneTitleTextView.setText(ringtone.getTitle(DetailActivity.this));
-                mRingtoneUriTextView.setText(ringtoneUri);
-
-                // 2. - 4) 볼륨
-                mSeekBar.setProgress(alarm.getVolume());
-
-                // 2. - 5) 진동 유무
-                if (alarm.getVibrate()) {
-                    mVibrateSwitch.setChecked(true);
-                } else {
-                    mVibrateSwitch.setChecked(false);
-                }
-
-                // 2. - 6) 다시 알림 - > 눌렀을 때 액티비티 수정.
-                mRepeatInterval = alarm.getRepeatInterval();
-                mRepeatNumber = alarm.getRepeatNumber();
-                String repeatIntervalNumberText;
-                if(mRepeatNumber == 0 && mRepeatInterval == 0){
-                    repeatIntervalNumberText = getString(R.string.no_use_label);
-                }else {
-                    repeatIntervalNumberText = mRepeatInterval + getString(R.string.repeat_interval_label)
-                            + ", " + mRepeatNumber + getString(R.string.repeat_number_label);
-                }
-                mRepeatIntervalNumberTextView.setText(repeatIntervalNumberText);
-
-                // 2. - 7) 메모
-                if (alarm.getMemo() != null) {
-                    mMemoEditText.setText(alarm.getMemo());
-                }
-
-                // 2. - 8) 위치
-                if (alarm.getLat() != null && alarm.getLng() != null) {
-                    mLocation = new Location("");
-                    mLocation.setLatitude(alarm.getLat());
-                    mLocation.setLongitude(alarm.getLng());
-                    mSupportMapFragment.getMapAsync(DetailActivity.this);
-                }
-
+        Alarm alarm = realm.where(Alarm.class).equalTo("id", mId).findFirst();
+        // 2. 값을 셋팅한다.
+        // 2. - 1) 알람 시간
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            mTimePicker.setHour(alarm.getHour());
+            mTimePicker.setMinute(alarm.getMinute());
+        } else {
+            mTimePicker.setCurrentHour(alarm.getHour());
+            mTimePicker.setCurrentMinute(alarm.getMinute());
+        }
+        // 2. - 2) 반복 요일
+        String repeatDay = alarm.getRepeatDay();
+        for (int i = 0; i < repeatDay.length(); ++i) {
+            if (repeatDay.charAt(i) == '1') {
+                mDayToggleButtonList.get(i).setChecked(true);
+            } else {
+                mDayToggleButtonList.get(i).setChecked(false);
             }
-        }, new Realm.Transaction.OnSuccess() {
-            @Override
-            public void onSuccess() {
+        }
+        // 2. - 3) 알람음 - > 눌렀을 때 액티비티 수정.
+        String ringtoneUri = alarm.getRingtoneUri();
+        Log.d("DetailActivity", "Ringtone URI: " + ringtoneUri);
+        Ringtone ringtone = RingtoneManager.getRingtone(getApplicationContext(), Uri.parse(ringtoneUri));
+        mRingtoneTitleTextView.setText(ringtone.getTitle(DetailActivity.this));
+        mRingtoneUriTextView.setText(ringtoneUri);
 
-            }
-        }, new Realm.Transaction.OnError() {
-            @Override
-            public void onError(Throwable error) {
+        // 2. - 4) 볼륨
+        mSeekBar.setProgress(alarm.getVolume());
 
-            }
-        });
+        // 2. - 5) 진동 유무
+        if (alarm.getVibrate()) {
+            mVibrateSwitch.setChecked(true);
+        } else {
+            mVibrateSwitch.setChecked(false);
+        }
+
+        // 2. - 6) 다시 알림 - > 눌렀을 때 액티비티 수정.
+        mRepeatInterval = alarm.getRepeatInterval();
+        mRepeatNumber = alarm.getRepeatNumber();
+        String repeatIntervalNumberText;
+        if (mRepeatNumber == 0 && mRepeatInterval == 0) {
+            repeatIntervalNumberText = getString(R.string.no_use_label);
+        } else {
+            repeatIntervalNumberText = mRepeatInterval + getString(R.string.repeat_interval_label)
+                    + ", " + mRepeatNumber + getString(R.string.repeat_number_label);
+        }
+        mRepeatIntervalNumberTextView.setText(repeatIntervalNumberText);
+
+        // 2. - 7) 메모
+        if (alarm.getMemo() != null) {
+            mMemoEditText.setText(alarm.getMemo());
+        }
+
+        // 2. - 8) 위치
+        if (alarm.getLat() != null && alarm.getLng() != null) {
+            mLocation = new Location("");
+            mLocation.setLatitude(alarm.getLat());
+            mLocation.setLongitude(alarm.getLng());
+            mSupportMapFragment.getMapAsync(DetailActivity.this);
+        }
     }
 
     protected void onStart() {
@@ -610,9 +604,53 @@ public class DetailActivity extends AppCompatActivity implements View.OnTouchLis
 
     @Override
     public void onBackPressed() {
-        if (mId != DEFAULT_ALARM_ID) {
+        if (mIsModify)
             insertOrUpdateAlarm();
+        finish();
+    }
+
+    private Calendar getCurrentDate(long now) {
+        Calendar currentDate = Calendar.getInstance();
+        currentDate.setTimeInMillis(now);
+
+        return currentDate;
+    }
+
+    private Calendar getTargetDate(long now) {
+        Calendar targetDate = Calendar.getInstance();
+        targetDate.setTimeInMillis(now);
+
+        Log.d("DetailActivity", "targetTime: " + targetDate.getTimeInMillis());
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            targetDate.set(Calendar.HOUR_OF_DAY, mTimePicker.getHour());
+            targetDate.set(Calendar.MINUTE, mTimePicker.getMinute());
+        } else {
+            targetDate.set(Calendar.HOUR_OF_DAY, mTimePicker.getCurrentHour());
+            targetDate.set(Calendar.MINUTE, mTimePicker.getCurrentMinute());
         }
-        super.onBackPressed();
+        targetDate.set(Calendar.SECOND, 0);
+
+        Log.d("DetailActivity", "targetTime: " + targetDate.getTimeInMillis());
+
+        return targetDate;
+    }
+
+    private boolean[] getRepeatDayArray() {
+        boolean isRepeat[] = new boolean[7];
+        boolean isNoRepeat = true;
+
+        for (int i = 0; i < mDayToggleButtonList.size(); ++i) {
+            if (mDayToggleButtonList.get(i).isChecked()) {
+                isRepeat[i] = true;
+                isNoRepeat = false;
+            } else {
+                isRepeat[i] = false;
+            }
+        }
+        if (isNoRepeat)
+            return null;
+        else
+            return isRepeat;
     }
 }

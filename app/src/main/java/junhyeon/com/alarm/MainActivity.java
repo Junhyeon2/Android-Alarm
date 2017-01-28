@@ -6,12 +6,13 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.TextView;
 
 import io.realm.Realm;
+import io.realm.Sort;
 import junhyeon.com.alarm.model.Alarm;
 
 public class MainActivity extends AppCompatActivity implements AlarmAdapter.ItemClickListener{
@@ -46,8 +47,7 @@ public class MainActivity extends AppCompatActivity implements AlarmAdapter.Item
     private void initAlarmRecyclerView(){
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         mAlarmRecyclerView.setLayoutManager(layoutManager);
-        mAlarmRecyclerView.setHasFixedSize(true);
-        mAlarmAdapter = new AlarmAdapter(getApplicationContext(), mRealm.where(Alarm.class).findAllAsync(), true, this);
+        mAlarmAdapter = new AlarmAdapter(getApplicationContext(), mRealm.where(Alarm.class).findAllSortedAsync("hour", Sort.ASCENDING, "minute", Sort.ASCENDING), true, this);
         mAlarmRecyclerView.setAdapter(mAlarmAdapter);
 
     }
@@ -59,8 +59,15 @@ public class MainActivity extends AppCompatActivity implements AlarmAdapter.Item
 
     @Override
     protected void onResume() {
-        mAlarmAdapter.notifyDataSetChanged();
         super.onResume();
+        int itemCount = mAlarmAdapter.getItemCount();
+        if(itemCount > 0){
+            mAlarmRecyclerView.setVisibility(View.VISIBLE);
+            mAlarmListStatusTextView.setVisibility(View.GONE);
+        }else{
+            mAlarmRecyclerView.setVisibility(View.GONE);
+            mAlarmListStatusTextView.setVisibility(View.VISIBLE);
+        }
     }
 
     @Override
